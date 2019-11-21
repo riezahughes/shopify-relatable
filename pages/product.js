@@ -16,6 +16,14 @@ const CHECK_SHOP = gql`
     product(id: $id) {
       title
       onlineStoreUrl
+      collections(first: 50) {
+        edges {
+          node {
+            id
+            title
+          }
+        }
+      }
       metafields(first: 50, namespace: "Test") {
         edges {
           node {
@@ -50,7 +58,10 @@ export default class Product extends Component {
               <Heading>{title}</Heading>
               <br />
               <Card title="Collections Whitelist" sectioned>
-                <CollectionSearch product={this.props.query.id} />
+                <CollectionSearch
+                  product={this.props.query.id}
+                  collections={data.product.collections.edges}
+                />
               </Card>
               <Card title="Product Selection" sectioned>
                 <TextField

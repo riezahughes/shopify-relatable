@@ -1,39 +1,13 @@
 import { Component } from "react";
-import {
-  Card,
-  Layout,
-  Page,
-  Heading,
-  TextField,
-  TextContainer,
-  List
-} from "@shopify/polaris";
-import { Query } from "react-apollo";
-import gql from "graphql-tag";
-
-const CHECK_SHOP = gql`
-  query getProductQuery($id: ID!) {
-    product(id: $id) {
-      title
-      onlineStoreUrl
-      metafields(first: 50, namespace: "Test") {
-        edges {
-          node {
-            key
-            value
-          }
-        }
-      }
-    }
-  }
-`;
+import { TextField, Autocomplete } from "@shopify/polaris";
 
 export default class CollectionSearch extends Component {
   constructor(props) {
     super(props);
     this.state = {
       currentSearch: "",
-      searching: false
+      searching: false,
+      selectedOptions: ""
     };
     this.updateSearchResult = this.updateSearchResult.bind(this);
     this.clearSearch = this.clearSearch.bind(this);
@@ -64,7 +38,17 @@ export default class CollectionSearch extends Component {
   }
 
   render() {
-    let graphqlString = "gid://shopify/Product/" + this.props.product;
+    const textField = (
+      <Autocomplete.TextField
+        label="Search for a collection"
+        value={this.state.currentSearch}
+        onChange={this.updateSearchResult}
+        clearButton
+        onClearButtonClick={this.clearSearch}
+        placeholder="Type a Collection to Find..."
+      />
+    );
+
     if (this.state.searching == false || this.state.currentSearch == "") {
       return (
         <TextField
@@ -77,37 +61,25 @@ export default class CollectionSearch extends Component {
         />
       );
     } else {
-      return (
-        <Query query={CHECK_SHOP} variables={{ id: graphqlString }}>
-          {({ loading, error, data }) => {
-            if (loading) return <div>Loading...</div>;
-            if (error) return <div>Error :(</div>;
+      let autoArray = [];
+      let arrayFind = this.props.collections || [];
 
-            // if(data.product.metafields.edges.length > 0){
-            //   console.log(data.product.metafields.edges)
-            // }else{
-            //   console.log("No Metafields")
-            // }
-            return (
-              <div>
-                <TextField
-                  label="Search for a collection"
-                  value={this.state.currentSearch}
-                  onChange={this.updateSearchResult}
-                  clearButton
-                  onClearButtonClick={this.clearSearch}
-                  placeholder="Type a Collection to Find..."
-                />
-                <TextContainer>
-                  <List>
-                    <List.Item>{data.product.title}</List.Item>
-                    <List.Item>{data.product.title}</List.Item>
-                  </List>
-                </TextContainer>
-              </div>
-            );
-          }}
-        </Query>
+      for (var i = 0; i < arrayFind.length; i++) {
+        console.log(i);
+        autoArray.push({
+          value: arrayFind[i].node.id,
+          label: arrayFind[i].node.title
+        });
+      }
+      return (
+        <div>
+          <Autocomplete
+            options={autoArray}
+            selected=""
+            onSelect=""
+            textField={textField}
+          />
+        </div>
       );
     }
   }
