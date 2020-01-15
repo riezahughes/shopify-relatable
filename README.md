@@ -1,3 +1,8 @@
+# Relatable
+A test of using shopify's CLI tool and GRAPHQL interfacing to bring up related products for a shop, allow whitelisting and many other features. Currently still in the build phase.
+
+
+
 # Shopify App Node
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE.md)
